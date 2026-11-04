@@ -37,6 +37,7 @@ fun MainTopBar(
     onSearchToggle: (Boolean) -> Unit,
     onMenuClick: () -> Unit,
     onAction: (MainAction) -> Unit,
+    showNavigationIcon: Boolean = true,
     onMoreMenuAction: (MainMoreMenuAction) -> Unit
 ) {
     var showImportMenu by remember { mutableStateOf(false) }
@@ -61,7 +62,7 @@ fun MainTopBar(
                 IconButton(onClick = onSearchClose) {
                     Icon(painterResource(R.drawable.ic_arrow_back_24dp), contentDescription = stringResource(R.string.acc_back))
                 }
-            } else {
+            } else if (showNavigationIcon) {
                 IconButton(onClick = onMenuClick) {
                     Icon(painterResource(R.drawable.ic_menu_24dp), contentDescription = stringResource(R.string.acc_open_menu))
                 }

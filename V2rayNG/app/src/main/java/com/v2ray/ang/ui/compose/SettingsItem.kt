@@ -52,6 +52,7 @@ fun CollapsiblePreferenceGroupHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .tvFocusableItem()
             .clickable { onExpandedChange(!expanded) }
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -91,7 +92,7 @@ private fun SettingsItemRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .then(if (onClick != null) Modifier.clickable(enabled = enabled, onClick = onClick) else Modifier)
+            .then(if (onClick != null && enabled) Modifier.tvFocusableItem().clickable(enabled = enabled, onClick = onClick) else Modifier)
             .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -58,6 +58,8 @@ import com.v2ray.ang.dto.LocateTarget
 import com.v2ray.ang.dto.entities.ProfileItem
 import com.v2ray.ang.dto.entities.SubscriptionUsageInfo
 import com.v2ray.ang.ui.compose.ItemDivider
+import com.v2ray.ang.ui.compose.LocalIsTv
+import com.v2ray.ang.ui.compose.tvFocusableItem
 import com.v2ray.ang.ui.compose.ReorderableGridItem
 import com.v2ray.ang.ui.compose.ReorderableListItem
 import com.v2ray.ang.ui.compose.colorConfigType
@@ -93,7 +95,8 @@ fun GroupPagerPage(
         mainViewModel.serverGroupState(groupId)
     }
     val groupState by groupStateFlow.collectAsStateWithLifecycle()
-    val canReorder = groupId.isNotEmpty() && searchQuery.isEmpty()
+    val isTv = LocalIsTv.current
+    val canReorder = groupId.isNotEmpty() && searchQuery.isEmpty() && !isTv
     val actions = remember(
         onSelectServer,
         onEditServer,
@@ -359,6 +362,9 @@ private fun ServerListItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
+            .tvFocusableItem(
+                onContextKey = { actions.more(row.guid, row.profile) }
+            )
             .semantics {
                 if (selectedStateDescription != null) {
                     stateDescription = selectedStateDescription

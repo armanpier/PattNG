@@ -224,6 +224,7 @@ fun <T> SelectListDialog(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .tvFocusableItem()
                             .then(
                                 if (showRadio) Modifier.selectable(
                                     selected = isSelected,

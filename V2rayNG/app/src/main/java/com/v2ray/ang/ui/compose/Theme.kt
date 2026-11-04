@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.v2ray.ang.AppConfig
 import com.v2ray.ang.handler.MmkvManager
+import com.v2ray.ang.util.TvUtil
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -190,8 +191,10 @@ fun AppTheme(
         }
     }
 
+    val isTv = TvUtil.isTv(context)
     CompositionLocalProvider(
         LocalDarkTheme provides darkTheme,
+        LocalIsTv provides isTv,
         LocalAppSnackbar provides snackbarController
     ) {
         MaterialTheme(

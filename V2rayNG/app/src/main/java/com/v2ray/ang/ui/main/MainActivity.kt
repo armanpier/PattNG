@@ -49,6 +49,8 @@ import com.v2ray.ang.ui.settings.SettingsActivity
 import com.v2ray.ang.ui.subscription.SubSettingActivity
 import com.v2ray.ang.ui.userasset.UserAssetActivity
 import com.v2ray.ang.util.LogUtil
+import com.v2ray.ang.util.TvRemoteAction
+import com.v2ray.ang.util.TvUtil
 import com.v2ray.ang.util.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -296,10 +298,38 @@ class MainActivity : HelperBaseComponentActivity() {
         }
     }
 
+    private fun cycleSubscriptionGroup(delta: Int): Boolean {
+        val state = mainViewModel.uiState.value
+        val groups = state.groups
+        if (groups.size <= 1) return false
+        val currentIndex = groups.indexOfFirst { it.id == state.selectedGroupId }.coerceAtLeast(0)
+        val targetIndex = TvUtil.stepGroupIndex(currentIndex, groups.size, delta)
+        if (targetIndex == currentIndex) return false
+        mainViewModel.onAction(MainAction.SelectGroup(groups[targetIndex].id))
+        return true
+    }
+
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BUTTON_B) {
-            moveTaskToBack(false)
-            return true
+        when (TvUtil.resolveRemoteKeyAction(keyCode)) {
+            TvRemoteAction.ToggleService -> {
+                handleFabAction()
+                return true
+            }
+            TvRemoteAction.TestCurrentPing -> {
+                handleLayoutTestClick()
+                return true
+            }
+            TvRemoteAction.PreviousGroup -> {
+                if (cycleSubscriptionGroup(-1)) return true
+            }
+            TvRemoteAction.NextGroup -> {
+                if (cycleSubscriptionGroup(1)) return true
+            }
+            TvRemoteAction.MoveToBack -> {
+                moveTaskToBack(false)
+                return true
+            }
+            null -> Unit
         }
         return super.onKeyDown(keyCode, event)
     }

@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.v2ray.ang.dto.GroupMapItem
+import com.v2ray.ang.ui.compose.tvFocusableItem
 import com.v2ray.ang.dto.entities.ServersCache
 import kotlinx.coroutines.flow.StateFlow
 
@@ -187,6 +188,7 @@ private fun GroupTabItem(
         modifier = Modifier
             .bringIntoViewRequester(bringIntoView)
             .onSizeChanged { size = it }
+            .tvFocusableItem(shape = CircleShape)
             .clip(CircleShape)
             .background(if (selected) colors.primary.copy(alpha = 0.12f) else Color.Transparent)
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
