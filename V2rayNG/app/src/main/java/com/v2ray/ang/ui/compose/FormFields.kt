@@ -1,5 +1,11 @@
 package com.v2ray.ang.ui.compose
 
+import android.view.KeyEvent
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -38,11 +44,15 @@ fun FormTextField(
     enabled: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Text,
     placeholder: String? = null,
-    maxLines: Int = 5,
+    singleLine: Boolean = true,
+    maxLines: Int = if (singleLine) 1 else 5,
     isError: Boolean = false,
     supportingText: String? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
 ) {
+    val isTv = LocalIsTv.current
+    val focusManager = LocalFocusManager.current
+    val effectiveSingleLine = singleLine || isTv
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -56,12 +66,15 @@ fun FormTextField(
             isError = isError,
             supportingText = supportingText?.let { { Text(it) } },
             trailingIcon = trailingIcon,
-            singleLine = false,
-            maxLines = maxLines,
+            singleLine = effectiveSingleLine,
+            maxLines = if (effectiveSingleLine) 1 else maxLines,
             enabled = enabled,
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = if (effectiveSingleLine) ImeAction.Next else ImeAction.Default
+            ),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
+                focusedContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f),
                 unfocusedContainerColor = Color.Transparent,
                 cursorColor = MaterialTheme.colorScheme.secondary,
                 selectionColors = TextSelectionColors(
@@ -69,7 +82,31 @@ fun FormTextField(
                     backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                 )
             ),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(
+                    if (isTv) {
+                        Modifier.onPreviewKeyEvent { event ->
+                            if (event.type == KeyEventType.KeyDown) {
+                                when (event.nativeKeyEvent.keyCode) {
+                                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                        true
+                                    }
+                                    KeyEvent.KEYCODE_DPAD_UP -> {
+                                        focusManager.moveFocus(FocusDirection.Up)
+                                        true
+                                    }
+                                    else -> false
+                                }
+                            } else {
+                                false
+                            }
+                        }
+                    } else {
+                        Modifier
+                    }
+                )
         )
     }
 }
@@ -90,6 +127,7 @@ fun FormDropdownField(
     defaultOption: String? = null,
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    val isTv = LocalIsTv.current
     val menuScrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -118,7 +156,7 @@ fun FormDropdownField(
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.Transparent,
+                focusedContainerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.08f),
                 unfocusedContainerColor = Color.Transparent,
                 cursorColor = MaterialTheme.colorScheme.secondary,
                 selectionColors = TextSelectionColors(
@@ -126,6 +164,8 @@ fun FormDropdownField(
                     backgroundColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                 )
             ),
+            singleLine = true,
+            maxLines = 1,
             modifier = Modifier
                 .menuAnchor(
                     type = if (editable) ExposedDropdownMenuAnchorType.PrimaryEditable
@@ -137,6 +177,29 @@ fun FormDropdownField(
                         keyboardController?.hide()
                     }
                 }
+                .then(
+                    if (isTv && !expanded) {
+                        Modifier.onPreviewKeyEvent { event ->
+                            if (event.type == KeyEventType.KeyDown) {
+                                when (event.nativeKeyEvent.keyCode) {
+                                    KeyEvent.KEYCODE_DPAD_DOWN -> {
+                                        focusManager.moveFocus(FocusDirection.Down)
+                                        true
+                                    }
+                                    KeyEvent.KEYCODE_DPAD_UP -> {
+                                        focusManager.moveFocus(FocusDirection.Up)
+                                        true
+                                    }
+                                    else -> false
+                                }
+                            } else {
+                                false
+                            }
+                        }
+                    } else {
+                        Modifier
+                    }
+                )
         )
         ExposedDropdownMenu(
             expanded = expanded,

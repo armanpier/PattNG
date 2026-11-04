@@ -46,6 +46,7 @@ import com.v2ray.ang.handler.CertificateFingerprintManager
 import com.v2ray.ang.ui.base.BaseComponentActivity
 import com.v2ray.ang.ui.base.EditorLoading
 import com.v2ray.ang.ui.base.EditorOutcomeEffect
+import androidx.compose.material3.MaterialTheme
 import com.v2ray.ang.ui.compose.AppTopBar
 import com.v2ray.ang.ui.compose.DeleteConfirmDialog
 import com.v2ray.ang.ui.compose.FormDropdownField
@@ -547,6 +548,7 @@ abstract class BaseServerActivity : BaseComponentActivity() {
         )
         Scaffold(
             contentWindowInsets = WindowInsets(0),
+            containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 AppTopBar(
                     title = title,

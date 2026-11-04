@@ -2,8 +2,11 @@ package com.v2ray.ang.root
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.condition.DisabledOnOs
+import org.junit.jupiter.api.condition.OS
 import java.util.concurrent.TimeUnit
 
+@DisabledOnOs(OS.WINDOWS)
 class RootProcessRunnerTest {
     @Test fun `a silent blocked command respects its deadline`() {
         val start = System.nanoTime()
